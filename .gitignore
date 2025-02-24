@@ -1,4 +1,11 @@
 .idea
+src/js/*
+src/scss/*
+output/*
+version/*
+!**/.gitkeep
+*bak_*
+
 
 # Logs
 logs

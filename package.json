@@ -1,0 +1,28 @@
+{
+  "devDependencies": {
+    "browser-sync": "^3.0.3",
+    "gulp": "^5.0.0",
+    "gulp-cli": "^3.0.0",
+    "webpack-stream": "^7.0.0"
+  },
+  "dependencies": {
+    "del": "^8.0.0",
+    "fs": "^0.0.1-security",
+    "gulp-autoprefixer": "^9.0.0",
+    "gulp-cached": "^1.1.1",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-debug": "^5.0.1",
+    "gulp-if": "^3.0.0",
+    "gulp-minify": "^3.1.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-remember": "^1.0.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^6.0.0",
+    "path": "^0.12.7",
+    "replace-in-file": "^8.3.0",
+    "sass": "^1.85.0",
+    "save-dev": "^0.0.1-security",
+    "yargs": "^17.7.2"
+  }
+}

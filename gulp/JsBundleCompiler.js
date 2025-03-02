@@ -2,9 +2,10 @@ const WEBPACK = require('webpack-stream');
 const GULP = require('gulp');
 const PATH = require('path');
 const FS = require('fs');
+const Pathfinder = require("./Pathfinder");
+const Version = require('./Version');
 const LogPrinter = require('./LogPrinter');
-const VersionUpdater = require('./VersionUpdater');
-
+const Constant = require('./Constant');
 
 /**
  * Компилятор js-файлов
@@ -12,128 +13,82 @@ const VersionUpdater = require('./VersionUpdater');
  * @url https://github.com/blazer404
  */
 class JsBundleCompiler {
-    #fileExtension = 'js';
-    #defaultFileName = `main.${this.#fileExtension}`;
-    #defaultConfig = require('../webpack/js.config.js');
-
-    #devMode = 'development';
-    #prodMode = 'production';
-
     constructor(config = {}) {
-        LogPrinter.success("\nJsBundleCompiler");
+        LogPrinter.message("\nJsBundleCompiler", false);
+        this.rootModuleDirName = '';
         this.inputFilepath = config.inputFilepath;
         this.sourceRoot = config.sourceRoot;
         this.outputDir = config.outputDir;
-        this.mainJsFile = config.mainJsFile || this.#defaultFileName;
-        this.wpConfig = config.wpConfig || this.#defaultConfig;
+        this.wpConfig = config.wpConfig;
+        this.mainFilename = config.mainFilename || Constant.defaultJsMainFilename;
+        this.extension = config.extension || Constant.defaultJsExtension;
 
         this.#exitOnInvalidConfig()
     }
 
     #exitOnInvalidConfig() {
-        if (!this.inputFilepath || !this.sourceRoot || !this.outputDir || !this.mainJsFile || !this.wpConfig) {
-            LogPrinter.danger('- Ошибка инициализации класса! Параметры заданы неверно');
+        if (!this.inputFilepath || !this.sourceRoot || !this.outputDir || !this.wpConfig || !this.mainFilename || !this.extension) {
+            LogPrinter.danger('Ошибка инициализации класса! Параметры заданы неверно');
             process.exit(1);
         }
     }
 
     /**
      * Запуск компиляции файлов
+     * @returns {Promise<void>}
      */
-    execute() {
-        this.#init().then(response => this.#buildAll(response.rootPath, response.outputFilename));
+    async execute() {
+        const pathfinder = new Pathfinder({
+            inputFilepath: this.inputFilepath,
+            sourceRoot: this.sourceRoot,
+            outputDir: this.outputDir
+        });
+        const pathSettings = pathfinder.find();
+        this.rootModuleDirName = pathSettings.rootModuleDirName;
+        await this.#buildAll(pathSettings.rootPath, pathSettings.outputFilename);
     }
-
-    /**
-     * Инициализация параметров компиляции
-     * @returns {Promise<unknown>}
-     */
-    async #init() {
-        const rootModuleDirName = this.#parseRootModuleDirName();
-        LogPrinter.info(`- Имя корневой директории модуля: "${rootModuleDirName}"`);
-        const pathSegments = this.#parsePathSegments();
-        const rootPathSegments = this.#findRootPathSegments(pathSegments, rootModuleDirName);
-        const rootPath = PATH.resolve(rootPathSegments.join('/'));
-        const outputFilename = PATH.basename(rootPath);
-        return new Promise(resolve => resolve({rootPath, outputFilename}));
-    }
-
-    /**
-     * Определение имени корневой директории модуля
-     * @returns {string}
-     */
-    #parseRootModuleDirName() {
-        let path = PATH.resolve(this.sourceRoot);
-        path = path.replace(/\\/g, '/');
-        const segments = path.split('/');
-        return segments[segments.length - 1];
-    }
-
-    /**
-     * Определение сегментов пути файла
-     * @returns {*}
-     */
-    #parsePathSegments() {
-        let path = PATH.dirname(this.inputFilepath)
-        path = path.replace(/\\/g, '\/');
-        return path.split('/');
-    }
-
-    /**
-     * Определение корневого пути до файла
-     * @param pathSegments
-     * @param rootDirName
-     * @returns {*[]}
-     */
-    #findRootPathSegments(pathSegments, rootDirName) {
-        let rootPathSegments = [];
-        for (let i = 0; i < pathSegments.length; i++) {
-            if (pathSegments[i] === rootDirName) {
-                rootPathSegments = pathSegments.slice(0, i + 2);
-                break;
-            }
-        }
-        return rootPathSegments;
-    }
-
 
     /**
      * Компиляция, углификация и версификация файлов
-     * @returns {*}
+     * @param rootPath
+     * @param outputFilename
+     * @returns {Promise<void>}
      */
     async #buildAll(rootPath, outputFilename) {
-        const srcFile = PATH.resolve(`${rootPath}/${this.mainJsFile}`);
+        const srcFile = PATH.resolve(`${rootPath}/${this.mainFilename}.${this.extension}`);
         if (FS.existsSync(srcFile)) {
-            LogPrinter.info(`- Компилирую "${srcFile}" в "${outputFilename}.${this.#fileExtension}"`);
-            await this.#buildOne(this.#devMode, srcFile, outputFilename);
-            await this.#buildOne(this.#prodMode, srcFile, outputFilename);
+            const name = `${outputFilename}.${this.extension}`;
+            LogPrinter.infoHighlight(`Компилирую ${srcFile} в ${name}`, [srcFile, name]);
+            await this.#buildOne(Constant.mode.dev, srcFile, outputFilename);
+            await this.#buildOne(Constant.mode.prod, srcFile, outputFilename);
+            LogPrinter.infoHighlight(`Компиляция ${name} успешно завершена`, [name]);
             await this.#upFileVersion(outputFilename);
         } else if (this.sourceRoot) {
             LogPrinter.warning('WARNING!: Похоже на внешний модуль.');
-            LogPrinter.warning(`WARNING!: Произвожу компиляцию всех ${this.mainJsFile} в ${this.sourceRoot}`);
+            LogPrinter.warning(`WARNING!: Произвожу компиляцию всех "${this.mainFilename}.${this.extension}" в "${this.sourceRoot}"`);
             await this.#rebuildRecursive();
         }
     }
 
     /**
      * Компиляция файла в зависимости от режима сборки
-     * @param mode this.#devMode/this.#prodMode
-     * @param srcFile путь основному файлу сборки
-     * @param outputFilename имя выходного файла
+     * @param mode
+     * @param srcFile
+     * @param outputFilename
      * @returns {Promise<unknown>}
      */
-    async #buildOne(mode = this.#devMode, srcFile, outputFilename) {
+    async #buildOne(mode, srcFile, outputFilename) {
         this.wpConfig.mode = mode;
         this.wpConfig.entry.main = srcFile;
-        const extension = mode === this.#devMode ? `${this.#fileExtension}` : `min.${this.#fileExtension}`;
+        const extension = mode === Constant.mode.dev ? `${this.extension}` : `min.${this.extension}`;
         this.wpConfig.output.filename = `${outputFilename}.${extension}`;
         this.wpConfig.output.path = PATH.resolve(`/${this.outputDir}`);
-
-        return new Promise(resolve => {
-            GULP.src(srcFile)
+        return new Promise(async resolve => {
+            await GULP.src(srcFile)
                 .pipe(WEBPACK(this.wpConfig))
-                .on('error', function handleError() {
-                    this.emit('end');
+                .on('error', async function handleError() {
+                    await this.emit('end');
+                    LogPrinter.danger(`\nКомпиляция "${srcFile}" завершена с ошибками\n`);
                 })
                 .pipe(GULP.dest(this.outputDir))
                 .on('end', resolve);
@@ -143,40 +98,38 @@ class JsBundleCompiler {
     /**
      * Обновление версии в ассетах
      * @param filename
-     * @returns {Promise<unknown>}
+     * @returns {Promise<void>}
      */
     async #upFileVersion(filename) {
-        const updater = new VersionUpdater({
-            dir: this.outputDir,
+        const version = new Version({
+            fileDir: this.outputDir,
             filename: filename,
-            extension: 'js'
+            extension: this.extension,
+            versionFile: Constant?.versionFiles[this.rootModuleDirName] || ''
         });
-        return await new Promise(() => updater.update());
+        await version.update();
     }
 
     /**
      * Рекурсивная компиляция всех бандлов, если был изменен какой-либо внешний модуль
+     * @returns {Promise<void>}
      */
-    #rebuildRecursive() {
+    async #rebuildRecursive() {
         const sourceRootPath = PATH.resolve(this.sourceRoot);
-        FS.readdir(sourceRootPath, (err, files) => {
-            if (err) {
-                LogPrinter.danger('ERROR!: Ошибка чтения директории');
-                return;
-            }
+        try {
+            const files = await FS.promises.readdir(sourceRootPath);
             for (const file of files) {
                 const filePath = PATH.join(sourceRootPath, file);
-                const inputFilepath = PATH.resolve(`${filePath}/${this.mainJsFile}`);
-                if (FS.existsSync(inputFilepath)) {
-                    const compiler = new JsBundleCompiler({
-                        inputFilepath: inputFilepath,
-                        outputDir: this.outputDir,
-                        sourceRoot: this.sourceRoot
-                    });
-                    compiler.execute();
+                const inputFilepath = PATH.resolve(`${filePath}/${this.mainFilename}.${this.extension}`);
+                const fileExists = FS.existsSync(inputFilepath);
+                if (fileExists) {
+                    const compiler = new JsBundleCompiler({...this, inputFilepath: inputFilepath});
+                    await compiler.execute();
                 }
             }
-        });
+        } catch (err) {
+            LogPrinter.danger('ERROR!: Ошибка чтения директории');
+        }
     }
 }
 

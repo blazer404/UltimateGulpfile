@@ -1,7 +1,9 @@
 const CONFIG = {
     mode: '',
     entry: {},
-    output: {},
+    output: {
+        publicPath: '/web/js/',
+    },
     module: {
         rules: [
             {

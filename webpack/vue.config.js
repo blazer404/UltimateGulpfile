@@ -4,7 +4,7 @@ const CONFIG = {
     mode: '',
     entry: {},
     output: {
-        publicPath: "/output/vue/",
+        publicPath: '/web/vue/',
     },
     performance: {
         hints: false,

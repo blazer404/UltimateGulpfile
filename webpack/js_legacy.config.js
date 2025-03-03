@@ -4,6 +4,7 @@ const CONFIG = {
     mode: '',
     entry: {},
     output: {
+        publicPath: '/web/js/',
         iife: false,
     },
     optimization: {

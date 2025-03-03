@@ -11,14 +11,19 @@ const CONFIG = {
         minimizer: [
             new TerserPlugin({
                 terserOptions: {
-                    format: {
-                        comments: false,
-                    },
+                    keep_classnames: false,
+                    keep_fnames: false,
                     compress: {
-                        drop_console: false,
-                        unused: false
+                        unused: false,
+                        drop_console: false
                     },
-                    mangle: false
+                    format: {
+                        comments: false
+                    },
+                    mangle: {
+                        toplevel: false,
+                        properties: false
+                    }
                 },
                 extractComments: false
             }),

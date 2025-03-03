@@ -1,6 +1,7 @@
 const PATH = require("path");
 const LogPrinter = require("./LogPrinter");
 
+
 /**
  * Класс для поиска корневого пути до модуля и имени модуля
  * @author blazer404

@@ -17,7 +17,7 @@ class JsBundleCompiler {
         LogPrinter.message("\nJsBundleCompiler", false);
         this.rootModuleDirName = '';
         this.inputFilepath = config.inputFilepath;
-        this.sourceRoot = config.sourceRoot;
+        this.sourceDir = config.sourceDir;
         this.outputDir = config.outputDir;
         this.wpConfig = config.wpConfig;
         this.mainFilename = config.mainFilename || Constant.defaultJsMainFilename;
@@ -27,7 +27,7 @@ class JsBundleCompiler {
     }
 
     #exitOnInvalidConfig() {
-        if (!this.inputFilepath || !this.sourceRoot || !this.outputDir || !this.wpConfig || !this.mainFilename || !this.extension) {
+        if (!this.inputFilepath || !this.sourceDir || !this.outputDir || !this.wpConfig || !this.mainFilename || !this.extension) {
             LogPrinter.danger('Ошибка инициализации класса! Параметры заданы неверно');
             process.exit(1);
         }
@@ -40,7 +40,7 @@ class JsBundleCompiler {
     async execute() {
         const pathfinder = new Pathfinder({
             inputFilepath: this.inputFilepath,
-            sourceRoot: this.sourceRoot,
+            sourceDir: this.sourceDir,
             outputDir: this.outputDir
         });
         const pathSettings = pathfinder.find();
@@ -63,9 +63,9 @@ class JsBundleCompiler {
             await this.#buildOne(Constant.mode.prod, srcFile, outputFilename);
             LogPrinter.infoHighlight(`Компиляция ${name} успешно завершена`, [name]);
             await this.#upFileVersion(outputFilename);
-        } else if (this.sourceRoot) {
+        } else if (this.sourceDir) {
             LogPrinter.warning('WARNING!: Похоже на внешний модуль.');
-            LogPrinter.warning(`WARNING!: Произвожу компиляцию всех "${this.mainFilename}.${this.extension}" в "${this.sourceRoot}"`);
+            LogPrinter.warning(`WARNING!: Произвожу компиляцию всех "${this.mainFilename}.${this.extension}" в "${this.sourceDir}"`);
             await this.#rebuildRecursive();
         }
     }
@@ -115,7 +115,7 @@ class JsBundleCompiler {
      * @returns {Promise<void>}
      */
     async #rebuildRecursive() {
-        const sourceRootPath = PATH.resolve(this.sourceRoot);
+        const sourceRootPath = PATH.resolve(this.sourceDir);
         try {
             const files = await FS.promises.readdir(sourceRootPath);
             for (const file of files) {

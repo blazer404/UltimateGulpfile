@@ -9,14 +9,14 @@ const LogPrinter = require("./LogPrinter");
 class Pathfinder {
     constructor(config = {}) {
         this.inputFilepath = config.inputFilepath;
-        this.sourceRoot = config.sourceRoot;
+        this.sourceDir = config.sourceDir;
         this.outputDir = config.outputDir;
 
         this.#exitOnInvalidConfig();
     }
 
     #exitOnInvalidConfig() {
-        if (!this.inputFilepath || !this.sourceRoot || !this.outputDir) {
+        if (!this.inputFilepath || !this.sourceDir || !this.outputDir) {
             LogPrinter.danger('Ошибка инициализации класса! Параметры заданы неверно');
             process.exit(1);
         }
@@ -43,7 +43,7 @@ class Pathfinder {
      * @returns {string}
      */
     #parseRootModuleDirName() {
-        let path = PATH.resolve(this.sourceRoot);
+        let path = PATH.resolve(this.sourceDir);
         path = path.replace(/\\/g, '/');
         const segments = path.split('/');
         return segments[segments.length - 1];

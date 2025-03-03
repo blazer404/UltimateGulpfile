@@ -10,14 +10,14 @@ const LogPrinter = require('./LogPrinter');
  */
 class WatcherConfigurator {
     constructor(config = {}) {
-        this.sourceRoot = config.sourceRoot;
+        this.sourceDir = config.sourceDir;
         this.outputDir = config.outputDir;
 
         this.#exitOnInvalidConfig();
     }
 
     #exitOnInvalidConfig() {
-        if (!this.sourceRoot || !this.outputDir) {
+        if (!this.sourceDir || !this.outputDir) {
             LogPrinter.danger('Ошибка инициализации класса! Параметры заданы неверно');
             process.exit(1);
         }
@@ -26,13 +26,32 @@ class WatcherConfigurator {
     /**
      * Конфигуратор прослушивания изменений в js-файлах
      */
-    watchJs() {
-        GULP.watch([`${this.sourceRoot}/**/*.js`]).on('change', (filepath) => {
+    watchJsLegacy() {
+        GULP.watch([`${this.sourceDir}/**/*.js`]).on('change', (filepath) => {
             this.#onChanged(filepath, true);
             this.#onStarted();
             const compiler = new JsBundleCompiler({
                 inputFilepath: filepath,
-                sourceRoot: this.sourceRoot,
+                sourceDir: this.sourceDir,
+                outputDir: this.outputDir,
+                wpConfig: require('../webpack/js_legacy.config'),
+                mainFilename: 'main',
+                extension: 'js',
+            });
+            compiler.execute().then(() => this.#onCompiled());
+        });
+    }
+
+    /**
+     * Конфигуратор прослушивания изменений в js-файлах
+     */
+    watchJs() {
+        GULP.watch([`${this.sourceDir}/**/*.js`]).on('change', (filepath) => {
+            this.#onChanged(filepath, true);
+            this.#onStarted();
+            const compiler = new JsBundleCompiler({
+                inputFilepath: filepath,
+                sourceDir: this.sourceDir,
                 outputDir: this.outputDir,
                 wpConfig: require('../webpack/js.config.js'),
                 mainFilename: 'main',
@@ -46,12 +65,12 @@ class WatcherConfigurator {
      * Конфигуратор прослушивания изменений в vue-файлах
      */
     watchVue() {
-        GULP.watch([`${this.sourceRoot}/**/*.js`, `${this.sourceRoot}/**/*.vue`]).on('change', (filepath) => {
+        GULP.watch([`${this.sourceDir}/**/*.js`, `${this.sourceDir}/**/*.vue`]).on('change', (filepath) => {
             this.#onChanged(filepath, true);
             this.#onStarted();
             const compiler = new JsBundleCompiler({
                 inputFilepath: filepath,
-                sourceRoot: this.sourceRoot,
+                sourceDir: this.sourceDir,
                 outputDir: this.outputDir,
                 wpConfig: require('../webpack/vue.config.js'),
                 mainFilename: 'app',
@@ -65,7 +84,7 @@ class WatcherConfigurator {
      * Конфигуратор прослушивания изменений в css-файлах
      */
     watchCss() {
-        GULP.watch([`${this.sourceRoot}/**/*.scss'`]).on('change', (filepath) => {
+        GULP.watch([`${this.sourceDir}/**/*.scss'`]).on('change', (filepath) => {
             this.#onChanged(filepath);
             // todo
         });

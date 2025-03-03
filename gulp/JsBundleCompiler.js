@@ -21,8 +21,8 @@ class JsBundleCompiler {
         this.sourceDir = config.sourceDir;
         this.outputDir = config.outputDir;
         this.wpConfig = config.wpConfig;
-        this.mainFilename = config.mainFilename || AppConfig.defaultJsMainFilename;
-        this.extension = config.extension || AppConfig.defaultJsExtension;
+        this.mainFilename = config.mainFilename || AppConfig.DEFAULT_JS_MAIN_FILENAME;
+        this.extension = config.extension || AppConfig.DEFAULT_JS_EXTENSION;
 
         this.#exitOnInvalidConfig()
     }
@@ -60,8 +60,8 @@ class JsBundleCompiler {
         if (FS.existsSync(srcFile)) {
             const name = `${outputFilename}.${this.extension}`;
             LogPrinter.infoHighlight(`Компилирую ${srcFile} в ${name}`, [srcFile, name]);
-            await this.#buildOne(AppConfig.mode.dev, srcFile, outputFilename);
-            await this.#buildOne(AppConfig.mode.prod, srcFile, outputFilename);
+            await this.#buildOne(AppConfig.MODE.dev, srcFile, outputFilename);
+            await this.#buildOne(AppConfig.MODE.prod, srcFile, outputFilename);
             LogPrinter.infoHighlight(`Компиляция ${name} успешно завершена`, [name]);
             await this.#upFileVersion(outputFilename);
         } else if (this.sourceDir) {
@@ -81,7 +81,7 @@ class JsBundleCompiler {
     async #buildOne(mode, srcFile, outputFilename) {
         this.wpConfig.mode = mode;
         this.wpConfig.entry.main = srcFile;
-        const extension = mode === AppConfig.mode.dev ? `${this.extension}` : `min.${this.extension}`;
+        const extension = mode === AppConfig.MODE.dev ? `${this.extension}` : `min.${this.extension}`;
         this.wpConfig.output.filename = `${outputFilename}.${extension}`;
         this.wpConfig.output.path = PATH.resolve(`/${this.outputDir}`);
         return new Promise(async resolve => {
@@ -106,7 +106,7 @@ class JsBundleCompiler {
             fileDir: this.outputDir,
             filename: filename,
             extension: this.extension,
-            versionFile: AppConfig.versionFiles[this.rootModuleDirName] || ''
+            versionFile: AppConfig.VERSION_FILES[this.rootModuleDirName] || ''
         });
         await version.update();
     }

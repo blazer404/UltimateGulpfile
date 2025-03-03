@@ -125,7 +125,7 @@ class Version {
         const nameBig = `${fullName}.${this.extension}?v=${version}`;
         let versionString = `'${this.filename}' => YII_ENV_PROD ? '/${nameMin}' : '/${nameBig}',\r\n`;
         if (appendSpaces) {
-            versionString = `    ${versionString}        `;
+            versionString = `    ${versionString}    `;
         }
         LogPrinter.infoHighlight(`Новая версия: ${version}`, [version]);
         LogPrinter.infoHighlight(`Строка версификации: ${versionString}`, [versionString]);

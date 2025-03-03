@@ -4,7 +4,6 @@ src/js_legacy/*
 src/js/*
 src/scss/*
 web/*
-version/*
 !**/.gitkeep
 *bak_*
 

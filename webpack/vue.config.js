@@ -1,4 +1,5 @@
 const {VueLoaderPlugin} = require('vue-loader');
+const TerserPlugin = require("terser-webpack-plugin");
 
 const CONFIG = {
     mode: '',
@@ -11,6 +12,13 @@ const CONFIG = {
     },
     stats: {
         warnings: false,
+    },
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                extractComments: false
+            }),
+        ],
     },
     module: {
         rules: [

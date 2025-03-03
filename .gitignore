@@ -1,8 +1,9 @@
 .idea
 src/vue/*
+src/js_legacy/*
 src/js/*
 src/scss/*
-output/*
+web/*
 version/*
 !**/.gitkeep
 *bak_*

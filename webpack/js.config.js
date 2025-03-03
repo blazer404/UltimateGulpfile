@@ -9,6 +9,11 @@ const CONFIG = {
     optimization: {
         minimizer: [
             new TerserPlugin({
+                terserOptions: {
+                    format: {
+                        comments: false
+                    },
+                },
                 extractComments: false
             }),
         ],

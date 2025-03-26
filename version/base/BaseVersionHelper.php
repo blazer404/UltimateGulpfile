@@ -14,14 +14,11 @@ class BaseVersionHelper extends VersionHelper
      * @inheritDoc
      * @param string $nameWithExtension
      * @return string
+     * @throws Exception
      */
     public static function getFilepath(string $nameWithExtension): string
     {
-        try {
-            return (new self)->findFilepathString($nameWithExtension);
-        } catch (Exception $e) {
-            return $e->getMessage();
-        }
+        return (new static())->findFilepathString($nameWithExtension);
     }
 
     /**
@@ -42,10 +39,10 @@ class BaseVersionHelper extends VersionHelper
             throw new Exception('Имя файла не может быть пустым');
         }
         $constName = mb_strtoupper($fileExtension);
-        if (!property_exists($this, $constName)) {
+        if (!defined("static::$constName")) {
             throw new Exception("Неверное расширение: $fileExtension");
         }
-        $scriptsMap = $this->$constName;
+        $scriptsMap = constant('static::' . $constName);
         if (!$scriptsMap[$fileName]) {
             throw new Exception("Файл '$fileName' не найден в списке $constName");
         }

@@ -70,8 +70,6 @@ class WatcherConfigurator {
                 sourceDir: this.sourceDir,
                 outputDir: this.outputDir,
                 wpConfig: require('../webpack/js.config.js'),
-                mainFilename: 'main',
-                extension: 'js',
             });
             compiler.execute().then(() => this.#onCompiled());
         });
@@ -89,8 +87,6 @@ class WatcherConfigurator {
                 sourceDir: this.sourceDir,
                 outputDir: this.outputDir,
                 wpConfig: require('../webpack/vue.config.js'),
-                mainFilename: 'app',
-                extension: 'js'
             });
             compiler.execute().then(() => this.#onCompiled());
         });

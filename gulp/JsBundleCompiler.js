@@ -12,6 +12,34 @@ const AppConfig = require('./AppConfig');
  * Компилятор js-файлов
  * @author blazer404
  * @url https://github.com/blazer404
+ *
+ * @arg {{
+ *   inputFilepath: string,
+ *   sourceDir: string,
+ *   outputDir: string,
+ *   wpConfig: object,
+ *   mainFilename: string,
+ *   extension: string
+ * }} config Параметры:
+ * * `inputFilepath` - Путь до текущего файла
+ * * `sourceDir` - Путь до директории с исходниками
+ * * `outputDir` - Путь до директории с результатами компиляции
+ * * `wpConfig` - Параметры конфигурации webpack
+ * * `mainFilename` - Имя основного файла скрипта. По-умолчанию берется из конфигурации
+ * * `extension` - Расширение основного файла скрипта. По-умолчанию берется из конфигурации
+ *
+ * @example
+ * const compiler = new JsBundleCompiler({
+ *     inputFilepath: 'src\\js\\crm\\task\\main.js',
+ *     sourceDir: 'src/js/crm'
+ *     outputDir: `web/js/crm`,
+ *     wpConfig: require('../webpack/js.config.js'),
+ *     mainFilename: 'main',
+ *     extension: 'js',
+ * });
+ * compiler.execute();
+ *
+ * @see AppConfig
  */
 class JsBundleCompiler {
     constructor(config = {}) {
@@ -39,11 +67,7 @@ class JsBundleCompiler {
      * @returns {Promise<void>}
      */
     async execute() {
-        const pathfinder = new Pathfinder({
-            inputFilepath: this.inputFilepath,
-            sourceDir: this.sourceDir,
-            outputDir: this.outputDir
-        });
+        const pathfinder = new Pathfinder({inputFilepath: this.inputFilepath, sourceDir: this.sourceDir});
         const pathSettings = pathfinder.find();
         this.rootModuleDirName = pathSettings.rootModuleDirName;
         await this.#buildAll(pathSettings.rootPath, pathSettings.outputFilename);
@@ -103,10 +127,10 @@ class JsBundleCompiler {
      */
     async #upFileVersion(filename) {
         const version = new Version({
+            versionFile: AppConfig.VERSION_FILES[this.rootModuleDirName] || '',
             fileDir: this.outputDir,
             filename: filename,
-            extension: this.extension,
-            versionFile: AppConfig.VERSION_FILES[this.rootModuleDirName] || ''
+            extension: this.extension
         });
         await version.update();
     }

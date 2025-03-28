@@ -7,6 +7,22 @@ const LogPrinter = require('./LogPrinter');
  * Конфигуратор прослушивания изменений в файлах
  * @author blazer404
  * @url https://github.com/blazer404
+ *
+ * @arg {{
+ *   sourceDir: string,
+ *   outputDir: string
+ * }} config Параметры:
+ * - `sourceDir` - Путь до директории с исходниками
+ * - `outputDir` - Путь до директории с результатами компиляции
+ *
+ * @example
+ * const configurator = new WatcherConfigurator({
+ *     sourceDir: `${AppConfig.SOURCE_DIR_JS}/site`,
+ *     outputDir: `${AppConfig.OUTPUT_DIR_JS}/site`
+ * });
+ * configurator.watchJs();
+ *
+ * @see AppConfig
  */
 class WatcherConfigurator {
     constructor(config = {}) {

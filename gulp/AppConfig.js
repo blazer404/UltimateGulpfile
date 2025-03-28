@@ -2,15 +2,29 @@
  * Конфигурация приложения
  * @author blazer404
  * @url https://github.com/blazer404
+ *
+ * @member PROXY_DOMAIN - домен для прослушивания `BROWSER_SYNC`
+ * @member SOURCE_DIR_JS - директория исходников `JS`
+ * @member SOURCE_DIR_JS_LEGACY - директория исходников `JS-legacy`
+ * @member SOURCE_DIR_VUE - директория исходников `Vue`
+ * @member OUTPUT_DIR_JS - директория собранных `JS`-файлов
+ * @member OUTPUT_DIR_VUE - директория собранных `Vue`-файлов
+ * @member VERSION_PATH - корневая директория файлов `версификации`
+ * @member VERSION_FILES - массив с `файлами версификации` для каждого модуля, формат: `{имя_модуля: путь_к_файлу}`
+ * @member DEFAULT_JS_MAIN_FILENAME - имя основного `JS`-файла по умолчанию
+ * @member DEFAULT_JS_EXTENSION - расширение основного `JS`-файла по умолчанию
+ * @member DEFAULT_CSS_MAIN_FILENAME - имя основного `CSS`-файла по умолчанию
+ * @member DEFAULT_CSS_EXTENSION - расширение основного `CSS`-файла по умолчанию
+ * @member MODE - массив режимов сборки приложения: `dev`, `prod`
  */
 class AppConfig {
-    static PROXY_DOMAIN = 'dp.local';
+    static PROXY_DOMAIN = 'site.local';
 
-    static JS_SOURCE_DIR = 'src/js';
-    static JS_LEGACY_SOURCE_DIR = 'src/js_legacy';
-    static VUE_SOURCE_DIR = 'src/vue';
-    static JS_OUTPUT_DIR = 'web/js';
-    static VUE_OUTPUT_DIR = 'web/vue';
+    static SOURCE_DIR_JS = 'src/js';
+    static SOURCE_DIR_JS_LEGACY = 'src/js_legacy';
+    static SOURCE_DIR_VUE = 'src/vue';
+    static OUTPUT_DIR_JS = 'web/js';
+    static OUTPUT_DIR_VUE = 'web/vue';
 
 
     static VERSION_PATH = 'version';

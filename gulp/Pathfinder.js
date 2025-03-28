@@ -6,18 +6,31 @@ const LogPrinter = require("./LogPrinter");
  * Класс для поиска корневого пути до модуля и имени модуля
  * @author blazer404
  * @url https://github.com/blazer404
+ *
+ * @arg {{
+ *   inputFilepath: string,
+ *   sourceDir: string
+ * }} config Параметры:
+ * * `inputFilepath` - Путь до текущего файла
+ * * `sourceDir` - Путь до директории с исходниками
+ *
+ * @example
+ * const pathfinder = new Pathfinder({
+ *     inputFilepath: 'src\\js\\crm\\task\\main.js',
+ *     sourceDir: 'src/js/crm'
+ * });
+ * const params = pathfinder.find();
  */
 class Pathfinder {
     constructor(config = {}) {
         this.inputFilepath = config.inputFilepath;
         this.sourceDir = config.sourceDir;
-        this.outputDir = config.outputDir;
 
         this.#exitOnInvalidConfig();
     }
 
     #exitOnInvalidConfig() {
-        if (!this.inputFilepath || !this.sourceDir || !this.outputDir) {
+        if (!this.inputFilepath || !this.sourceDir) {
             LogPrinter.danger('Ошибка инициализации класса! Параметры заданы неверно');
             process.exit(1);
         }
@@ -25,7 +38,7 @@ class Pathfinder {
 
     /**
      * Поиск корневого пути до модуля и имени модуля
-     * @returns {{outputFilename: string, rootModuleDirName: string, rootPath: string}}
+     * @returns {{rootModuleDirName: string, rootPath: string, outputFilename: string}}
      */
     find() {
         const rootModuleDirName = this.#parseRootModuleDirName();

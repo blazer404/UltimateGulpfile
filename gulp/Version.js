@@ -7,6 +7,26 @@ const LogPrinter = require('./LogPrinter');
  * Версификация js/css в файле версификации
  * @author blazer404
  * @url https://github.com/blazer404
+ *
+ * @arg {{
+ *   versionFile: string,
+ *   fileDir: string,
+ *   filename: string,
+ *   extension: string
+ * }} config Параметры:
+ * * `versionFile` - Путь до файла версификации
+ * * `fileDir` - Путь до директории с исходниками
+ * * `filename` - Имя основного файла
+ * * `extension` - Расширение основного файла
+ *
+ * @example
+ * const version = new Version({
+ *     versionFile: 'version/CrmVersionHelper.php',
+ *     fileDir: 'web/js/crm',
+ *     filename: 'kanban',
+ *     extension: 'js'
+ * });
+ * version.update();
  */
 class Version {
     constructor(config = {}) {
@@ -19,7 +39,7 @@ class Version {
     }
 
     #exitOnInvalidConfig() {
-        if (!this.fileDir || !this.filename || !this.versionFile || !this.extension || !this.versionFile) {
+        if (!this.versionFile || !this.fileDir || !this.filename || !this.extension) {
             LogPrinter.danger('Ошибка инициализации класса! Параметры заданы неверно');
             process.exit(1);
         }

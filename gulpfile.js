@@ -13,7 +13,7 @@ GULP.task('watch', function () {
     new WatcherConfigurator({sourceDir: `${AppConfig.SOURCE_DIR_JS_LEGACY}/site`, outputDir: `${AppConfig.OUTPUT_DIR_JS}/site`}).watchJsLegacy();
     new WatcherConfigurator({sourceDir: `${AppConfig.SOURCE_DIR_JS_LEGACY}/crm`, outputDir: `${AppConfig.OUTPUT_DIR_JS}/crm`}).watchJsLegacy();
 
-    new WatcherConfigurator({sourceDir: `${AppConfig.SOURCE_DIR_VUE}/site`, outputDir: `${AppConfig.OUTPUT_DIR_VUE}/crm`}).watchVue();
+    new WatcherConfigurator({sourceDir: `${AppConfig.SOURCE_DIR_VUE}/site`, outputDir: `${AppConfig.OUTPUT_DIR_VUE}/site`}).watchVue();
     new WatcherConfigurator({sourceDir: `${AppConfig.SOURCE_DIR_VUE}/crm`, outputDir: `${AppConfig.OUTPUT_DIR_VUE}/crm`}).watchVue();
 });
 

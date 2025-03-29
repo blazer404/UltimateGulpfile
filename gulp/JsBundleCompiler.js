@@ -84,8 +84,9 @@ class JsBundleCompiler {
         if (FS.existsSync(srcFile)) {
             const name = `${outputFilename}.${this.extension}`;
             LogPrinter.infoHighlight(`Компилирую ${srcFile} в ${name}`, [srcFile, name]);
-            await this.#buildOne(AppConfig.MODE.dev, srcFile, outputFilename);
-            await this.#buildOne(AppConfig.MODE.prod, srcFile, outputFilename);
+            for (const mode of Object.values(AppConfig.MODE)) {
+                await this.#buildOne(mode, srcFile, outputFilename);
+            }
             LogPrinter.infoHighlight(`Компиляция ${name} успешно завершена`, [name]);
             await this.#upFileVersion(outputFilename);
         } else if (this.sourceDir) {

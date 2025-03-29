@@ -4,7 +4,7 @@ const WatcherConfigurator = require("./gulp/WatcherConfigurator");
 const AppConfig = require("./gulp/AppConfig");
 
 
-GULP.task('serve', () => BROWSER_SYNC.init({proxy: AppConfig.PROXY_DOMAIN, open: false}));
+GULP.task('serve', () => BROWSER_SYNC.init({proxy: AppConfig.PROXY_DOMAIN, open: AppConfig.BROWSER_OPEN}));
 
 GULP.task('watch', function () {
     new WatcherConfigurator({sourceDir: `${AppConfig.SOURCE_DIR_JS}/site`, outputDir: `${AppConfig.OUTPUT_DIR_JS}/site`}).watchJs();

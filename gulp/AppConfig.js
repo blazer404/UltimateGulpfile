@@ -4,6 +4,7 @@
  * @url https://github.com/blazer404
  *
  * @member PROXY_DOMAIN - домен для прослушивания `BROWSER_SYNC`
+ * @member BROWSER_OPEN - автоматическое открытие браузера при запуске `BROWSER_SYNC`
  * @member SOURCE_DIR_JS - директория исходников `JS`
  * @member SOURCE_DIR_JS_LEGACY - директория исходников `JS-legacy`
  * @member SOURCE_DIR_VUE - директория исходников `Vue`
@@ -19,6 +20,7 @@
  */
 class AppConfig {
     static PROXY_DOMAIN = 'site.local';
+    static BROWSER_OPEN = false;
 
     static SOURCE_DIR_JS = 'src/js';
     static SOURCE_DIR_JS_LEGACY = 'src/js_legacy';
